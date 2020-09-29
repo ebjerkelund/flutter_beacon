@@ -55,8 +55,8 @@ class FlutterBeacon {
   Stream<AuthorizationStatus> _onAuthorizationStatus;
 
   /// Initialize scanning API.
-  Future<bool> get initializeScanning async {
-    final result = await _methodChannel.invokeMethod('initialize');
+  Future<bool> initializeScanning(Map<String, bool> types) async {
+    final result = await _methodChannel.invokeMethod('initialize', types);
 
     if (result is bool) {
       return result;
@@ -71,8 +71,8 @@ class FlutterBeacon {
   ///
   /// For Android, it will check whether Bluetooth is enabled,
   /// allowed to access location services and check
-  /// whether location services is enabled.
   /// For iOS, it will check whether Bluetooth is enabled,
+  /// whether location services is enabled.
   /// requestWhenInUse or requestAlways location services and check
   /// whether location services is enabled.
   Future<bool> get initializeAndCheckScanning async {
@@ -202,11 +202,11 @@ class FlutterBeacon {
   /// Start ranging iBeacons with defined [List] of [Region]s.
   ///
   /// This will fires [RangingResult] whenever the iBeacons in range.
-  Stream<RangingResult> ranging(List<Region> regions) {
+  Stream<RangingResult> ranging(List<Region> regions, List<String> macAddresses) {
     final list = regions.map((region) => region.toJson).toList();
     final Stream<RangingResult> onRanging = _rangingChannel
         .receiveBroadcastStream(list)
-        .map((dynamic event) => RangingResult.from(event));
+        .map((dynamic event) => RangingResult.from(event, macAddresses));
     return onRanging;
   }
 

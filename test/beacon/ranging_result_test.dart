@@ -29,7 +29,7 @@ main() {
         }
       ]
     };
-    final enter = RangingResult.from(map);
+    final enter = RangingResult.from(map, <String>[]);
 
     expect(enter.region, isNotNull);
     expect(enter.region.identifier, 'Cubeacon');

@@ -33,6 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -48,6 +51,8 @@ public class FlutterBeaconPlugin implements MethodCallHandler,
   private static final String TAG = FlutterBeaconPlugin.class.getSimpleName();
   private final BeaconParser iBeaconLayout = new BeaconParser()
       .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+  private final BeaconParser eddystoneUIDLayout = new BeaconParser()
+      .setBeaconLayout("s:0-1=feaa,m:2-2=00,p:3-3:-41,i:4-13,i:14-19");
 
   private static final int REQUEST_CODE_LOCATION = 1234;
   private static final int REQUEST_CODE_BLUETOOTH = 5678;
@@ -110,7 +115,12 @@ public class FlutterBeaconPlugin implements MethodCallHandler,
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     if (call.method.equals("initialize")) {
-      initialize();
+      Log.d("INITIALIZE", "eddystone: " + call.argument("eddystone"));
+      Log.d("INITIALIZE", "altbeacon: " + call.argument("altbeacon"));
+      boolean eddystoneRequired = call.argument("eddystone") != null ? (boolean)call.argument("eddystone") : false;
+      boolean altBeaconRequired = call.argument("altbeacon") != null ? (boolean)call.argument("altbeacon") : false;
+      initialize(eddystoneRequired, altBeaconRequired);
+
       if (beaconManager != null && !beaconManager.isBound(beaconConsumer)) {
         this.flutterResult = result;
         this.beaconManager.bind(beaconConsumer);
@@ -122,7 +132,11 @@ public class FlutterBeaconPlugin implements MethodCallHandler,
     }
 
     if (call.method.equals("initializeAndCheck")) {
-      initializeAndCheck(result);
+      Log.d("INITIALIZE", "eddystone: " + call.argument("eddystone"));
+      Log.d("INITIALIZE", "altbeacon: " + call.argument("altbeacon"));
+      boolean eddystoneRequired = call.argument("eddystone") != null ? (boolean)call.argument("eddystone") : false;
+      boolean altBeaconRequired = call.argument("altbeacon") != null ? (boolean)call.argument("altbeacon") : false;
+      initializeAndCheck(result, eddystoneRequired, altBeaconRequired);
       return;
     }
 
@@ -225,16 +239,19 @@ public class FlutterBeaconPlugin implements MethodCallHandler,
     result.notImplemented();
   }
 
-  private void initialize() {
+  private void initialize(boolean eddystoneRequired, boolean altBeaconRequired) {
     beaconManager = BeaconManager.getInstanceForApplication(registrar.context());
-    if (!beaconManager.getBeaconParsers().contains(iBeaconLayout)) {
-      beaconManager.getBeaconParsers().clear();
+    beaconManager.getBeaconParsers().clear();
+    if (eddystoneRequired) {
+      beaconManager.getBeaconParsers().add(eddystoneUIDLayout);
+    }
+    if (altBeaconRequired) {
       beaconManager.getBeaconParsers().add(iBeaconLayout);
     }
   }
 
-  private void initializeAndCheck(Result result) {
-    initialize();
+  private void initializeAndCheck(Result result, boolean eddystoneRequired, boolean altBeaconRequired) {
+    initialize(eddystoneRequired, altBeaconRequired);
 
     if (checkLocationServicesPermission() && checkBluetoothIfEnabled() && checkLocationServicesIfEnabled()) {
       if (result != null) {

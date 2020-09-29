@@ -6,19 +6,25 @@ import 'package:flutter_test/flutter_test.dart';
 main() {
   test('main constructor must be equal', () {
     const beacon = const Beacon(
+      type: 'altbeacon',
       proximityUUID: 'UUID',
       macAddress: 'MAC-ADDRESS',
       major: 1,
       minor: 2,
+      namespaceId: '',
+      instanceId: '',
       rssi: -60,
       txPower: -59,
       accuracy: 0.0,
     );
 
+    expect(beacon.type, 'altbeacon');
     expect(beacon.proximityUUID, 'UUID');
     expect(beacon.macAddress, 'MAC-ADDRESS');
     expect(beacon.major, 1);
     expect(beacon.minor, 2);
+    expect(beacon.namespaceId, '');
+    expect(beacon.instanceId, '');
     expect(beacon.rssi, -60);
     expect(beacon.txPower, -59);
     expect(beacon.accuracy, 0.0);
@@ -37,20 +43,26 @@ main() {
 
   test('constructor from json must be equal', () {
     final beacon = Beacon.fromJson({
+      'type': 'altbeacon',
       'proximityUUID': 'UUID',
       'macAddress': 'MAC-ADDRESS',
       'major': 1,
       'minor': 2,
+      'namespaceId': '',
+      'instanceId': '',
       'rssi': '-60',
       'txPower': '-59',
       'accuracy': '1.23',
       'proximity': 'far',
     });
 
+    expect(beacon.type, 'altbeacon');
     expect(beacon.proximityUUID, 'UUID');
     expect(beacon.macAddress, 'MAC-ADDRESS');
     expect(beacon.major, 1);
     expect(beacon.minor, 2);
+    expect(beacon.namespaceId, '');
+    expect(beacon.instanceId, '');
     expect(beacon.rssi, -60);
     expect(beacon.txPower, -59);
     expect(beacon.accuracy, 1.23);
@@ -58,20 +70,26 @@ main() {
 
   test('beacon must be equal', () {
     final beacon1 = Beacon.fromJson({
+      'type': 'altbeacon',
       'proximityUUID': 'UUID',
       'macAddress': 'MAC-ADDRESS',
       'major': 1,
       'minor': 2,
+      'namespaceId': '',
+      'instanceId': '',
       'rssi': '-60',
       'txPower': '-59',
       'accuracy': '1.23',
       'proximity': 'far',
     });
     final beacon2 = Beacon.fromJson({
+      'type': 'altbeacon',
       'proximityUUID': 'UUID',
       'macAddress': 'MAC-ADDRESS',
       'major': 1,
       'minor': 2,
+      'namespaceId': '',
+      'instanceId': '',
       'rssi': '-60',
       'txPower': '-59',
       'accuracy': '1.23',
@@ -85,20 +103,26 @@ main() {
   test('parsing beacon array length must be equal to "2"', () {
     final beacons = [
       Beacon.fromJson({
+        'type': 'altbeacon',
         'proximityUUID': 'UUID',
         'macAddress': 'MAC-ADDRESS',
         'major': 1,
         'minor': 2,
+        'namespaceId': '',
+        'instanceId': '',
         'rssi': '-60',
         'txPower': '-59',
         'accuracy': '1.23',
         'proximity': 'far',
       }),
       Beacon.fromJson({
+        'type': 'altbeacon',
         'proximityUUID': 'UUID',
         'macAddress': 'MAC-ADDRESS',
         'major': 1,
         'minor': 2,
+        'namespaceId': '',
+        'instanceId': '',
         'rssi': '-60',
         'txPower': '-59',
         'accuracy': '1.23',
@@ -107,25 +131,31 @@ main() {
     ];
     expect(Beacon.beaconArrayToJson(beacons) is List<dynamic>, isTrue);
     expect(
-        Beacon.beaconFromArray(Beacon.beaconArrayToJson(beacons))
+        Beacon.beaconFromArray(Beacon.beaconArrayToJson(beacons), <String>[])
             is List<Beacon>,
         isTrue);
   });
 
   test('beacon json must be equal', () {
     final beacon = Beacon.fromJson({
+      'type': 'altbeacon',
       'proximityUUID': 'UUID',
       'major': 1,
       'minor': 2,
+      'namespaceId': '',
+      'instanceId': '',
       'rssi': -60,
       'accuracy': 1.23,
       'proximity': 'far',
     });
 
     expect(beacon.toJson, {
+      'type': 'altbeacon',
       'proximityUUID': 'UUID',
       'major': 1,
       'minor': 2,
+      'namespaceId': '',
+      'instanceId': '',
       'rssi': -60,
       'accuracy': 1.23,
       'proximity': 'far',
@@ -133,9 +163,12 @@ main() {
     expect(
         beacon.toString(),
         json.encode({
+          'type': 'altbeacon',
           'proximityUUID': 'UUID',
           'major': 1,
           'minor': 2,
+          'namespaceId': '',
+          'instanceId': '',
           'rssi': -60,
           'accuracy': 1.23,
           'proximity': 'far',

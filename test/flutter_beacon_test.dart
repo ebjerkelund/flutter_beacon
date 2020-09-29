@@ -181,7 +181,7 @@ void main() {
   group('Method channel', () {
     test('Initialize return "true"', () async {
       expect(
-        await flutterBeacon.initializeScanning,
+        await flutterBeacon.initializeScanning(null),
         true,
       );
     });
@@ -265,7 +265,7 @@ void main() {
           'proximityUUID': 'CB10023F-A318-3394-4199-A8730C7C1AEC'
         }),
       ];
-      final result = await flutterBeacon.ranging(regions).first;
+      final result = await flutterBeacon.ranging(regions, <String>[]).first;
       expect(result.region, isNotNull);
       expect(result.region.identifier, 'Cubeacon');
       expect(

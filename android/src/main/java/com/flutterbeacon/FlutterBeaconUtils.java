@@ -34,9 +34,44 @@ class FlutterBeaconUtils {
   private static Map<String, Object> beaconToMap(Beacon beacon) {
     Map<String, Object> map = new HashMap<>();
 
-    map.put("proximityUUID", beacon.getId1().toString().toUpperCase());
-    map.put("major", beacon.getId2().toInt());
-    map.put("minor", beacon.getId3().toInt());
+    if (beacon != null) {
+      if (beacon.getServiceUuid() == 0xfeaa) {
+          // This is Eddystone, which uses a service Uuid of 0xfeaa
+          // namespaceId = beacon.getId1();
+          // instanceId = beacon.getId2();
+          Log.d("BEACON", "type: " + "eddystone");
+          Log.d("BEACON", "namespaceId: " + beacon.getId1());
+          Log.d("BEACON", "instanceId: " + beacon.getId2());
+          map.put("type", "eddystone");
+          map.put("namespaceId", beacon.getId1().toString());
+          map.put("instanceId", beacon.getId2().toString());
+          map.put("proximityUUID", "");
+          map.put("major", -1);
+          map.put("minor", -1);
+      }
+      else {
+          // This is another type of beacon like AltBeacon or iBeacon
+          // uuid = beacon.getId1();
+          // major = beacon.getId2();
+          // minor = beacon.getId3();
+          Log.d("BEACON", "type: " + "altbeacon");
+          Log.d("BEACON", "proximityUUID: " + beacon.getId1());
+          Log.d("BEACON", "major: " + beacon.getId2());
+          Log.d("BEACON", "minor: " + beacon.getId3());
+          map.put("type", "altbeacon");
+          map.put("proximityUUID", beacon.getId1().toString().toUpperCase());
+          map.put("major", beacon.getId2().toInt());
+          map.put("minor", beacon.getId3().toInt());
+          map.put("namespaceId", "");
+          map.put("instanceId", "");
+      }
+    }
+
+    Log.d("BEACON", "rssi: " + beacon.getRssi());
+    Log.d("BEACON", "txPower: " + beacon.getTxPower());
+    Log.d("BEACON", "accuracy: " + beacon.getDistance());
+    Log.d("BEACON", "macAddress: " + beacon.getBluetoothAddress());
+
     map.put("rssi", beacon.getRssi());
     map.put("txPower", beacon.getTxPower());
     map.put("accuracy", String.format(Locale.US, "%.2f", beacon.getDistance()));

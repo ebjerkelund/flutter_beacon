@@ -9,7 +9,10 @@ enum Proximity { unknown, immediate, near, far }
 
 /// Class for managing Beacon object.
 class Beacon {
-  /// The proximity UUID of beacon.
+  /// The type of beacon
+  final String type;
+
+  /// The proximity UUID of beacon (altbeacon/iBeacon).
   final String proximityUUID;
 
   /// The mac address of beacon.
@@ -17,11 +20,17 @@ class Beacon {
   /// From iOS this value will be null
   final String macAddress;
 
-  /// The major value of beacon.
+  /// The major value of beacon (altbeacon/iBeacon).
   final int major;
 
-  /// The minor value of beacon.
+  /// The minor value of beacon (altbeacon/iBeacon).
   final int minor;
+
+  /// The namespaceId of the beacon (eddystone).
+  final String namespaceId;
+
+  /// The instanceId of the beacon (eddystone).
+  final String instanceId;
 
   /// The rssi value of beacon.
   final int rssi;
@@ -39,10 +48,13 @@ class Beacon {
 
   /// Create beacon object.
   const Beacon({
+    this.type,
     this.proximityUUID,
     this.macAddress,
     this.major,
     this.minor,
+    this.namespaceId,
+    this.instanceId,
     this.rssi,
     this.txPower,
     this.accuracy,
@@ -52,10 +64,13 @@ class Beacon {
   /// Create beacon object from json.
   Beacon.fromJson(dynamic json)
       : this(
+          type: json['type'],
           proximityUUID: json['proximityUUID'],
           macAddress: json['macAddress'],
           major: json['major'],
           minor: json['minor'],
+          namespaceId: json['namespaceId'],
+          instanceId: json['instanceId'],
           rssi: _parseInt(json['rssi']),
           txPower: _parseInt(json['txPower']),
           accuracy: _parseDouble(json['accuracy']),
@@ -106,10 +121,10 @@ class Beacon {
   }
 
   /// Parsing array of [Map] into [List] of [Beacon].
-  static List<Beacon> beaconFromArray(dynamic beacons) {
+  static List<Beacon> beaconFromArray(dynamic beacons, List<String> macAddresses) {
     if (beacons is List) {
       return beacons.map((json) {
-        return Beacon.fromJson(json);
+        if (macAddresses == null || macAddresses.isEmpty || macAddresses.contains(json['macAddress'])) return Beacon.fromJson(json);
       }).toList();
     }
 
@@ -126,9 +141,12 @@ class Beacon {
   /// Serialize current instance object into [Map].
   dynamic get toJson {
     final map = <String, dynamic>{
+      'type': type,
       'proximityUUID': proximityUUID,
       'major': major,
       'minor': minor,
+      'namespaceId': namespaceId,
+      'instanceId': instanceId,
       'rssi': rssi ?? -1,
       'accuracy': accuracy,
       'proximity': proximity.toString().split('.').last
@@ -174,15 +192,27 @@ class Beacon {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Beacon &&
+          type == 'altbeacon' &&
           runtimeType == other.runtimeType &&
           proximityUUID == other.proximityUUID &&
           major == other.major &&
           minor == other.minor &&
+          (Platform.isAndroid ? macAddress == other.macAddress : true) ||
+      other is Beacon &&
+          type == 'eddystone' &&
+          runtimeType == other.runtimeType &&
+          namespaceId == other.namespaceId &&
+          instanceId == other.instanceId &&
           (Platform.isAndroid ? macAddress == other.macAddress : true);
 
   @override
   int get hashCode {
-    int hashCode = proximityUUID.hashCode ^ major.hashCode ^ minor.hashCode;
+    int hashCode = -1;
+    if (type == 'eddystone') {
+      hashCode = namespaceId.hashCode ^ instanceId.hashCode;
+    } else {
+      hashCode = proximityUUID.hashCode ^ major.hashCode ^ minor.hashCode;
+    }
     if (Platform.isAndroid) {
       hashCode = hashCode ^ macAddress.hashCode;
     }

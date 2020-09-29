@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   initScanBeacon() async {
-    await flutterBeacon.initializeScanning;
+    await flutterBeacon.initializeScanning(null);
     await checkAllRequirements();
     if (!authorizationStatusOk ||
         !locationServiceEnabled ||
@@ -97,7 +97,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
 
     _streamRanging =
-        flutterBeacon.ranging(regions).listen((RangingResult result) {
+        flutterBeacon.ranging(regions, <String>[]).listen((RangingResult result) {
       print(result);
       if (result != null && mounted) {
         setState(() {
@@ -254,18 +254,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         subtitle: new Row(
                           mainAxisSize: MainAxisSize.max,
                           children: <Widget>[
-                            Flexible(
-                                child: Text(
+                            Text(
                                     'Major: ${beacon.major}\nMinor: ${beacon.minor}',
                                     style: TextStyle(fontSize: 13.0)),
-                                flex: 1,
-                                fit: FlexFit.tight),
-                            Flexible(
-                                child: Text(
+                            Text(
                                     'Accuracy: ${beacon.accuracy}m\nRSSI: ${beacon.rssi}',
                                     style: TextStyle(fontSize: 13.0)),
-                                flex: 2,
-                                fit: FlexFit.tight)
                           ],
                         ),
                       );
