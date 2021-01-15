@@ -121,10 +121,10 @@ class Beacon {
   }
 
   /// Parsing array of [Map] into [List] of [Beacon].
-  static List<Beacon> beaconFromArray(dynamic beacons, List<String> macAddresses) {
+  static List<Beacon> beaconFromArray(dynamic beacons, List<String> macAddresses, List<String> proximities) {
     if (beacons is List) {
       return beacons.map((json) {
-        if (macAddresses == null || macAddresses.isEmpty || macAddresses.contains(json['macAddress'])) return Beacon.fromJson(json);
+        if ((macAddresses == null || macAddresses.isEmpty || macAddresses.contains(json['macAddress'])) && (proximities == null || proximities.isEmpty || proximities.contains(json['proximity']))) return Beacon.fromJson(json);
       }).toList();
     }
 
@@ -140,17 +140,7 @@ class Beacon {
 
   /// Serialize current instance object into [Map].
   dynamic get toJson {
-    final map = <String, dynamic>{
-      'type': type,
-      'proximityUUID': proximityUUID,
-      'major': major,
-      'minor': minor,
-      'namespaceId': namespaceId,
-      'instanceId': instanceId,
-      'rssi': rssi ?? -1,
-      'accuracy': accuracy,
-      'proximity': proximity.toString().split('.').last
-    };
+    final map = <String, dynamic>{'type': type, 'proximityUUID': proximityUUID, 'major': major, 'minor': minor, 'namespaceId': namespaceId, 'instanceId': instanceId, 'rssi': rssi ?? -1, 'accuracy': accuracy, 'proximity': proximity.toString().split('.').last};
 
     if (Platform.isAndroid) {
       map['txPower'] = txPower ?? -1;
@@ -189,21 +179,7 @@ class Beacon {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Beacon &&
-          type == 'altbeacon' &&
-          runtimeType == other.runtimeType &&
-          proximityUUID == other.proximityUUID &&
-          major == other.major &&
-          minor == other.minor &&
-          (Platform.isAndroid ? macAddress == other.macAddress : true) ||
-      other is Beacon &&
-          type == 'eddystone' &&
-          runtimeType == other.runtimeType &&
-          namespaceId == other.namespaceId &&
-          instanceId == other.instanceId &&
-          (Platform.isAndroid ? macAddress == other.macAddress : true);
+  bool operator ==(Object other) => identical(this, other) || other is Beacon && type == 'altbeacon' && runtimeType == other.runtimeType && proximityUUID == other.proximityUUID && major == other.major && minor == other.minor && (Platform.isAndroid ? macAddress == other.macAddress : true) || other is Beacon && type == 'eddystone' && runtimeType == other.runtimeType && namespaceId == other.namespaceId && instanceId == other.instanceId && (Platform.isAndroid ? macAddress == other.macAddress : true);
 
   @override
   int get hashCode {

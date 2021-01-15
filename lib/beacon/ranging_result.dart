@@ -13,9 +13,9 @@ class RangingResult {
   final List<Beacon> beacons;
 
   /// Constructor for deserialize dynamic json into [RangingResult].
-  RangingResult.from(dynamic json, List<String> macAddresses)
+  RangingResult.from(dynamic json, List<String> macAddresses, List<String> proximities)
       : region = Region.fromJson(json['region']),
-        beacons = Beacon.beaconFromArray(json['beacons'], macAddresses);
+        beacons = Beacon.beaconFromArray(json['beacons'], macAddresses, proximities);
 
   /// Return the serializable of this object into [Map].
   dynamic get toJson => <String, dynamic>{

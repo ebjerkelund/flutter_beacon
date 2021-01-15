@@ -27,26 +27,21 @@ class FlutterBeacon {
   FlutterBeacon._internal();
 
   /// Method Channel used to communicate to native code.
-  static const MethodChannel _methodChannel =
-      const MethodChannel('flutter_beacon');
+  static const MethodChannel _methodChannel = const MethodChannel('flutter_beacon');
 
   /// Event Channel used to communicate to native code ranging beacons.
-  static const EventChannel _rangingChannel =
-      EventChannel('flutter_beacon_event');
+  static const EventChannel _rangingChannel = EventChannel('flutter_beacon_event');
 
   /// Event Channel used to communicate to native code monitoring beacons.
-  static const EventChannel _monitoringChannel =
-      EventChannel('flutter_beacon_event_monitoring');
+  static const EventChannel _monitoringChannel = EventChannel('flutter_beacon_event_monitoring');
 
   /// Event Channel used to communicate to native code to checking
   /// for bluetooth state changed.
-  static const EventChannel _bluetoothStateChangedChannel =
-      EventChannel('flutter_bluetooth_state_changed');
+  static const EventChannel _bluetoothStateChangedChannel = EventChannel('flutter_bluetooth_state_changed');
 
   /// Event Channel used to communicate to native code to checking
   /// for bluetooth state changed.
-  static const EventChannel _authorizationStatusChangedChannel =
-      EventChannel('flutter_authorization_status_changed');
+  static const EventChannel _authorizationStatusChangedChannel = EventChannel('flutter_authorization_status_changed');
 
   /// This information does not change from call to call. Cache it.
   Stream<BluetoothState> _onBluetoothState;
@@ -202,11 +197,9 @@ class FlutterBeacon {
   /// Start ranging iBeacons with defined [List] of [Region]s.
   ///
   /// This will fires [RangingResult] whenever the iBeacons in range.
-  Stream<RangingResult> ranging(List<Region> regions, List<String> macAddresses) {
+  Stream<RangingResult> ranging(List<Region> regions, List<String> macAddresses, List<String> proximities) {
     final list = regions.map((region) => region.toJson).toList();
-    final Stream<RangingResult> onRanging = _rangingChannel
-        .receiveBroadcastStream(list)
-        .map((dynamic event) => RangingResult.from(event, macAddresses));
+    final Stream<RangingResult> onRanging = _rangingChannel.receiveBroadcastStream(list).map((dynamic event) => RangingResult.from(event, macAddresses, proximities));
     return onRanging;
   }
 
@@ -215,9 +208,7 @@ class FlutterBeacon {
   /// This will fires [MonitoringResult] whenever the iBeacons in range.
   Stream<MonitoringResult> monitoring(List<Region> regions) {
     final list = regions.map((region) => region.toJson).toList();
-    final Stream<MonitoringResult> onMonitoring = _monitoringChannel
-        .receiveBroadcastStream(list)
-        .map((dynamic event) => MonitoringResult.from(event));
+    final Stream<MonitoringResult> onMonitoring = _monitoringChannel.receiveBroadcastStream(list).map((dynamic event) => MonitoringResult.from(event));
     return onMonitoring;
   }
 
@@ -226,9 +217,7 @@ class FlutterBeacon {
   /// This will fires [BluetoothState] whenever bluetooth state changed.
   Stream<BluetoothState> bluetoothStateChanged() {
     if (_onBluetoothState == null) {
-      _onBluetoothState = _bluetoothStateChangedChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => BluetoothState.parse(event));
+      _onBluetoothState = _bluetoothStateChangedChannel.receiveBroadcastStream().map((dynamic event) => BluetoothState.parse(event));
     }
     return _onBluetoothState;
   }
@@ -238,9 +227,7 @@ class FlutterBeacon {
   /// This will fires [AuthorizationStatus] whenever authorization status changed.
   Stream<AuthorizationStatus> authorizationStatusChanged() {
     if (_onAuthorizationStatus == null) {
-      _onAuthorizationStatus = _authorizationStatusChangedChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => AuthorizationStatus.parse(event));
+      _onAuthorizationStatus = _authorizationStatusChangedChannel.receiveBroadcastStream().map((dynamic event) => AuthorizationStatus.parse(event));
     }
     return _onAuthorizationStatus;
   }

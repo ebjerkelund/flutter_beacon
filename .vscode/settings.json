@@ -1,0 +1,4 @@
+{
+    "dart.allowTestsOutsideTestFolder": true,
+    "dart.lineLength": 999
+}
