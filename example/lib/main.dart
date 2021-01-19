@@ -96,8 +96,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       }
     }
 
-    _streamRanging =
-        flutterBeacon.ranging(regions, <String>[]).listen((RangingResult result) {
+    _streamRanging = flutterBeacon.ranging(
+        regions, <String>[], <Proximity>[]).listen((RangingResult result) {
       print(result);
       if (result != null && mounted) {
         setState(() {
@@ -194,9 +194,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   onPressed: () async {
                     if (Platform.isAndroid) {
                       await flutterBeacon.openLocationSettings;
-                    } else if (Platform.isIOS) {
-
-                    }
+                    } else if (Platform.isIOS) {}
                   }),
             StreamBuilder<BluetoothState>(
               builder: (context, snapshot) {
@@ -221,9 +219,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                           } on PlatformException catch (e) {
                             print(e);
                           }
-                        } else if (Platform.isIOS) {
-
-                        }
+                        } else if (Platform.isIOS) {}
                       },
                       color: Colors.red,
                     );
@@ -255,11 +251,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                           mainAxisSize: MainAxisSize.max,
                           children: <Widget>[
                             Text(
-                                    'Major: ${beacon.major}\nMinor: ${beacon.minor}',
-                                    style: TextStyle(fontSize: 13.0)),
+                                'Major: ${beacon.major}\nMinor: ${beacon.minor}',
+                                style: TextStyle(fontSize: 13.0)),
                             Text(
-                                    'Accuracy: ${beacon.accuracy}m\nRSSI: ${beacon.rssi}',
-                                    style: TextStyle(fontSize: 13.0)),
+                                'Accuracy: ${beacon.accuracy}m\nRSSI: ${beacon.rssi}',
+                                style: TextStyle(fontSize: 13.0)),
                           ],
                         ),
                       );

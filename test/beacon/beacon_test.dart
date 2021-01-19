@@ -131,7 +131,8 @@ main() {
     ];
     expect(Beacon.beaconArrayToJson(beacons) is List<dynamic>, isTrue);
     expect(
-        Beacon.beaconFromArray(Beacon.beaconArrayToJson(beacons), <String>[])
+        Beacon.beaconFromArray(
+                Beacon.beaconArrayToJson(beacons), <String>[], <Proximity>[])
             is List<Beacon>,
         isTrue);
   });

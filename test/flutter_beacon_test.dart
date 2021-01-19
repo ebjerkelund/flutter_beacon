@@ -265,7 +265,8 @@ void main() {
           'proximityUUID': 'CB10023F-A318-3394-4199-A8730C7C1AEC'
         }),
       ];
-      final result = await flutterBeacon.ranging(regions, <String>[]).first;
+      final result =
+          await flutterBeacon.ranging(regions, <String>[], <Proximity>[]).first;
       expect(result.region, isNotNull);
       expect(result.region.identifier, 'Cubeacon');
       expect(
