@@ -74,7 +74,7 @@ class Beacon {
           rssi: _parseInt(json['rssi']),
           txPower: _parseInt(json['txPower']),
           accuracy: _parseDouble(json['accuracy']),
-          proximity: _parseProximity(json['proximity']),
+          proximity: _stringToProximity(json['proximity']as String),
         );
 
   /// Parsing dynamic data into double.
@@ -100,7 +100,7 @@ class Beacon {
   }
 
   /// Parsing dynamic proximity into enum [Proximity].
-  static dynamic _parseProximity(dynamic proximity) {
+  static Proximity _stringToProximity(String proximity) {
     if (proximity == 'unknown') {
       return Proximity.unknown;
     }
@@ -120,18 +120,55 @@ class Beacon {
     return null;
   }
 
+  /// Parsing dynamic proximity into enum [Proximity].
+  static String _proximityToString(Proximity proximity) {
+    if (proximity == Proximity.unknown) {
+      return 'unknown';
+    }
+
+    if (proximity == Proximity.immediate) {
+      return 'immediate';
+    }
+
+    if (proximity == Proximity.near) {
+      return 'near';
+    }
+
+    if (proximity == Proximity.far) {
+      return 'far';
+    }
+
+    return null;
+  }
+
   /// Parsing array of [Map] into [List] of [Beacon].
   static List<Beacon> beaconFromArray(
       dynamic beacons, List<String> macAddresses, List<Proximity> proximities) {
     if (beacons is List) {
-      List<String> _proximityList = <String>[];
-      proximities.map((Proximity entry) => entry.toString).toList();
       return beacons.map((json) {
-        if ((macAddresses == null ||
-                macAddresses.isEmpty ||
-                macAddresses.contains(json['macAddress'])) &&
-            (_proximityList.isEmpty ||
-                _proximityList.contains(_parseProximity(json['proximity']))))
+        Proximity thisProximity;
+        if (proximities.isNotEmpty) {
+          if (json['proximity'] != null) {
+            thisProximity = _stringToProximity(json['proximity'] as String);
+          } else 
+          if (json['accuracy'] != null) {
+            thisProximity = _accuracyToProximity(double.tryParse(json['accuracy'] as String));
+          } else {
+            thisProximity = Proximity.unknown;
+          }
+        }
+        if (
+            (
+              macAddresses == null ||
+              macAddresses.isEmpty ||
+              macAddresses.contains(json['macAddress'] as String)
+            )
+            &&
+            (
+              proximities.isEmpty ||
+              proximities.contains(thisProximity)
+            )
+          )
           return Beacon.fromJson(json);
       }).toList();
     }
@@ -168,6 +205,28 @@ class Beacon {
     return map;
   }
 
+  static Proximity _accuracyToProximity(double accuracy) {
+
+    if (accuracy == null) {
+      return Proximity.unknown;
+    }
+    
+    if (accuracy == 0.0) {
+      return Proximity.unknown;
+    }
+
+    if (accuracy <= 0.5) {
+      return Proximity.immediate;
+    }
+
+    if (accuracy < 3.0) {
+      return Proximity.near;
+    }
+
+    return Proximity.unknown;
+
+  }
+
   /// Return [Proximity] of beacon.
   ///
   /// iOS will always set proximity by default, but Android is not
@@ -181,19 +240,8 @@ class Beacon {
       return _proximity;
     }
 
-    if (accuracy == 0.0) {
-      return Proximity.unknown;
-    }
+    return _accuracyToProximity(accuracy);
 
-    if (accuracy <= 0.5) {
-      return Proximity.immediate;
-    }
-
-    if (accuracy < 3.0) {
-      return Proximity.near;
-    }
-
-    return Proximity.far;
   }
 
   @override
