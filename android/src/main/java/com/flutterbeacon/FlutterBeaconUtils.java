@@ -39,9 +39,9 @@ class FlutterBeaconUtils {
           // This is Eddystone, which uses a service Uuid of 0xfeaa
           // namespaceId = beacon.getId1();
           // instanceId = beacon.getId2();
-          Log.d("BEACON", "type: " + "eddystone");
-          Log.d("BEACON", "namespaceId: " + beacon.getId1());
-          Log.d("BEACON", "instanceId: " + beacon.getId2());
+          // Log.d("BEACON", "type: " + "eddystone");
+          // Log.d("BEACON", "namespaceId: " + beacon.getId1());
+          // Log.d("BEACON", "instanceId: " + beacon.getId2());
           map.put("type", "eddystone");
           map.put("namespaceId", beacon.getId1().toString());
           map.put("instanceId", beacon.getId2().toString());
@@ -54,10 +54,10 @@ class FlutterBeaconUtils {
           // uuid = beacon.getId1();
           // major = beacon.getId2();
           // minor = beacon.getId3();
-          Log.d("BEACON", "type: " + "altbeacon");
-          Log.d("BEACON", "proximityUUID: " + beacon.getId1());
-          Log.d("BEACON", "major: " + beacon.getId2());
-          Log.d("BEACON", "minor: " + beacon.getId3());
+          // Log.d("BEACON", "type: " + "altbeacon");
+          // Log.d("BEACON", "proximityUUID: " + beacon.getId1());
+          // Log.d("BEACON", "major: " + beacon.getId2());
+          // Log.d("BEACON", "minor: " + beacon.getId3());
           map.put("type", "altbeacon");
           map.put("proximityUUID", beacon.getId1().toString().toUpperCase());
           map.put("major", beacon.getId2().toInt());
@@ -67,15 +67,17 @@ class FlutterBeaconUtils {
       }
     }
 
-    Log.d("BEACON", "rssi: " + beacon.getRssi());
-    Log.d("BEACON", "txPower: " + beacon.getTxPower());
-    Log.d("BEACON", "accuracy: " + beacon.getDistance());
-    Log.d("BEACON", "macAddress: " + beacon.getBluetoothAddress());
+    // Log.d("BEACON", "rssi: " + beacon.getRssi());
+    // Log.d("BEACON", "txPower: " + beacon.getTxPower());
+    // Log.d("BEACON", "accuracy: " + beacon.getDistance());
+    // Log.d("BEACON", "macAddress: " + beacon.getBluetoothAddress());
+    Log.d("BEACON", "bluetoothName: " + beacon.getBluetoothName());
 
     map.put("rssi", beacon.getRssi());
     map.put("txPower", beacon.getTxPower());
     map.put("accuracy", String.format(Locale.US, "%.2f", beacon.getDistance()));
     map.put("macAddress", beacon.getBluetoothAddress());
+    map.put("bluetoothName", beacon.getBluetoothName());
 
     return map;
   }

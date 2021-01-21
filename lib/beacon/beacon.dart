@@ -20,6 +20,11 @@ class Beacon {
   /// From iOS this value will be null
   final String macAddress;
 
+  /// The name of beacon.
+  ///
+  /// From iOS this value will be ?
+  final String bluetoothName;
+
   /// The major value of beacon (altbeacon/iBeacon).
   final int major;
 
@@ -51,6 +56,7 @@ class Beacon {
     this.type,
     this.proximityUUID,
     this.macAddress,
+    this.bluetoothName,
     this.major,
     this.minor,
     this.namespaceId,
@@ -67,6 +73,7 @@ class Beacon {
           type: json['type'],
           proximityUUID: json['proximityUUID'],
           macAddress: json['macAddress'],
+          bluetoothName: json['bluetoothName'],
           major: json['major'],
           minor: json['minor'],
           namespaceId: json['namespaceId'],
@@ -74,7 +81,7 @@ class Beacon {
           rssi: _parseInt(json['rssi']),
           txPower: _parseInt(json['txPower']),
           accuracy: _parseDouble(json['accuracy']),
-          proximity: _stringToProximity(json['proximity']as String),
+          proximity: _stringToProximity(json['proximity'] as String),
         );
 
   /// Parsing dynamic data into double.
@@ -150,25 +157,17 @@ class Beacon {
         if (proximities.isNotEmpty) {
           if (json['proximity'] != null) {
             thisProximity = _stringToProximity(json['proximity'] as String);
-          } else 
-          if (json['accuracy'] != null) {
-            thisProximity = _accuracyToProximity(double.tryParse(json['accuracy'] as String));
+          } else if (json['accuracy'] != null) {
+            thisProximity = _accuracyToProximity(
+                double.tryParse(json['accuracy'] as String));
           } else {
             thisProximity = Proximity.unknown;
           }
         }
-        if (
-            (
-              macAddresses == null ||
-              macAddresses.isEmpty ||
-              macAddresses.contains(json['macAddress'] as String)
-            )
-            &&
-            (
-              proximities.isEmpty ||
-              proximities.contains(thisProximity)
-            )
-          )
+        if ((macAddresses == null ||
+                macAddresses.isEmpty ||
+                macAddresses.contains(json['macAddress'] as String)) &&
+            (proximities.isEmpty || proximities.contains(thisProximity)))
           return Beacon.fromJson(json);
       }).toList();
     }
@@ -194,23 +193,24 @@ class Beacon {
       'instanceId': instanceId,
       'rssi': rssi ?? -1,
       'accuracy': accuracy,
-      'proximity': proximity.toString().split('.').last
+      'proximity': proximity.toString().split('.').last,
+      'bluetoothName': bluetoothName ?? "",
     };
 
     if (Platform.isAndroid) {
       map['txPower'] = txPower ?? -1;
       map['macAddress'] = macAddress ?? "";
+      if (map['bluetoothName'] == "") map['bluetoothName'] = macAddress ?? "";
     }
 
     return map;
   }
 
   static Proximity _accuracyToProximity(double accuracy) {
-
     if (accuracy == null) {
       return Proximity.unknown;
     }
-    
+
     if (accuracy == 0.0) {
       return Proximity.unknown;
     }
@@ -224,7 +224,6 @@ class Beacon {
     }
 
     return Proximity.unknown;
-
   }
 
   /// Return [Proximity] of beacon.
@@ -241,7 +240,6 @@ class Beacon {
     }
 
     return _accuracyToProximity(accuracy);
-
   }
 
   @override
