@@ -20,11 +20,6 @@ class Beacon {
   /// From iOS this value will be null
   final String macAddress;
 
-  /// The name of beacon.
-  ///
-  /// From iOS this value will be ?
-  final String bluetoothName;
-
   /// The major value of beacon (altbeacon/iBeacon).
   final int major;
 
@@ -56,7 +51,6 @@ class Beacon {
     this.type,
     this.proximityUUID,
     this.macAddress,
-    this.bluetoothName,
     this.major,
     this.minor,
     this.namespaceId,
@@ -73,7 +67,6 @@ class Beacon {
           type: json['type'],
           proximityUUID: json['proximityUUID'],
           macAddress: json['macAddress'],
-          bluetoothName: json['bluetoothName'],
           major: json['major'],
           minor: json['minor'],
           namespaceId: json['namespaceId'],
@@ -194,18 +187,20 @@ class Beacon {
       'rssi': rssi ?? -1,
       'accuracy': accuracy,
       'proximity': proximity.toString().split('.').last,
-      'bluetoothName': bluetoothName ?? "",
     };
 
     if (Platform.isAndroid) {
       map['txPower'] = txPower ?? -1;
       map['macAddress'] = macAddress ?? "";
-      if (map['bluetoothName'] == "") map['bluetoothName'] = macAddress ?? "";
     }
 
     return map;
   }
 
+  /// - `accuracy == 0.0` : [Proximity.unknown]
+  /// - `accuracy > 0 && accuracy <= 1.0` : [Proximity.immediate]
+  /// - `accuracy > 1.0 && accuracy < 10.0` : [Proximity.near]
+  /// - `accuracy > 10.0` : [Proximity.far]
   static Proximity _accuracyToProximity(double accuracy) {
     if (accuracy == null) {
       return Proximity.unknown;
@@ -215,11 +210,11 @@ class Beacon {
       return Proximity.unknown;
     }
 
-    if (accuracy <= 0.5) {
+    if (accuracy <= 1.0) {
       return Proximity.immediate;
     }
 
-    if (accuracy < 3.0) {
+    if (accuracy < 10.0) {
       return Proximity.near;
     }
 
@@ -230,10 +225,6 @@ class Beacon {
   ///
   /// iOS will always set proximity by default, but Android is not
   /// so we manage it by filtering the accuracy like bellow :
-  /// - `accuracy == 0.0` : [Proximity.unknown]
-  /// - `accuracy > 0 && accuracy <= 0.5` : [Proximity.immediate]
-  /// - `accuracy > 0.5 && accuracy < 3.0` : [Proximity.near]
-  /// - `accuracy > 3.0` : [Proximity.far]
   Proximity get proximity {
     if (_proximity != null) {
       return _proximity;
