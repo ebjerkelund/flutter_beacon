@@ -233,6 +233,17 @@ class Beacon {
     return _accuracyToProximity(accuracy);
   }
 
+  /// Return string value [Proximity] of beacon.
+  ///
+  /// iOS will always set proximity by default, but Android is not
+  /// so we manage it by filtering the accuracy like bellow :
+  String get proximityValue {
+    if (_proximity != null) {
+      return _proximityToString(Proximity.unknown);
+    }
+    return _proximityToString(_proximity);
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
