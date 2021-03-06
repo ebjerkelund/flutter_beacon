@@ -54,7 +54,7 @@ main() {
       'txPower': '-59',
       'accuracy': '1.23',
       'proximity': 'far',
-    });
+    }, null);
 
     expect(beacon.type, 'altbeacon');
     expect(beacon.proximityUUID, 'UUID');
@@ -81,7 +81,7 @@ main() {
       'txPower': '-59',
       'accuracy': '1.23',
       'proximity': 'far',
-    });
+    }, null);
     final beacon2 = Beacon.fromJson({
       'type': 'altbeacon',
       'proximityUUID': 'UUID',
@@ -94,7 +94,7 @@ main() {
       'txPower': '-59',
       'accuracy': '1.23',
       'proximity': 'far',
-    });
+    }, null);
 
     expect(beacon1 == beacon2, isTrue);
     expect(beacon1.hashCode == beacon2.hashCode, isTrue);
@@ -114,7 +114,7 @@ main() {
         'txPower': '-59',
         'accuracy': '1.23',
         'proximity': 'far',
-      }),
+      }, null),
       Beacon.fromJson({
         'type': 'altbeacon',
         'proximityUUID': 'UUID',
@@ -127,7 +127,7 @@ main() {
         'txPower': '-59',
         'accuracy': '1.23',
         'proximity': 'far',
-      }),
+      }, null),
     ];
     expect(Beacon.beaconArrayToJson(beacons) is List<dynamic>, isTrue);
     expect(
@@ -148,7 +148,7 @@ main() {
       'rssi': -60,
       'accuracy': 1.23,
       'proximity': 'far',
-    });
+    }, null);
 
     expect(beacon.toJson, {
       'type': 'altbeacon',

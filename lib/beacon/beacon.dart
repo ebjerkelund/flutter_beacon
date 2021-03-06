@@ -62,7 +62,7 @@ class Beacon {
   }) : this._proximity = proximity;
 
   /// Create beacon object from json.
-  Beacon.fromJson(dynamic json)
+  Beacon.fromJson(dynamic json, Proximity proximity)
       : this(
           type: json['type'],
           proximityUUID: json['proximityUUID'],
@@ -74,7 +74,7 @@ class Beacon {
           rssi: _parseInt(json['rssi']),
           txPower: _parseInt(json['txPower']),
           accuracy: _parseDouble(json['accuracy']),
-          proximity: _stringToProximity(json['proximity'] as String),
+          proximity: proximity == null ? Proximity.unknown : proximity,
         );
 
   /// Parsing dynamic data into double.
@@ -101,7 +101,7 @@ class Beacon {
 
   /// Parsing dynamic proximity into enum [Proximity].
   static Proximity _stringToProximity(String proximity) {
-    if (proximity == 'unknown') {
+    if (proximity == null || proximity == 'unknown') {
       return Proximity.unknown;
     }
 
@@ -117,12 +117,12 @@ class Beacon {
       return Proximity.far;
     }
 
-    return null;
+    return Proximity.unknown;
   }
 
   /// Parsing dynamic proximity into enum [Proximity].
   static String _proximityToString(Proximity proximity) {
-    if (proximity == Proximity.unknown) {
+    if (proximity == null || proximity == Proximity.unknown) {
       return 'unknown';
     }
 
@@ -138,7 +138,7 @@ class Beacon {
       return 'far';
     }
 
-    return null;
+    return 'unknown';
   }
 
   /// Parsing array of [Map] into [List] of [Beacon].
@@ -146,22 +146,18 @@ class Beacon {
       dynamic beacons, List<String> macAddresses, List<Proximity> proximities) {
     if (beacons is List) {
       return beacons.map((json) {
-        Proximity thisProximity;
-        if (proximities.isNotEmpty) {
-          if (json['proximity'] != null) {
-            thisProximity = _stringToProximity(json['proximity'] as String);
-          } else if (json['accuracy'] != null) {
-            thisProximity = _accuracyToProximity(
-                double.tryParse(json['accuracy'] as String));
-          } else {
-            thisProximity = Proximity.unknown;
-          }
+        Proximity thisProximity = Proximity.unknown;
+        if (json['proximity'] != null) {
+          thisProximity = _stringToProximity(json['proximity'] as String);
+        } else if (json['accuracy'] != null) {
+          thisProximity = _accuracyToProximity(
+              double.tryParse(json['accuracy'] as String));
         }
         if ((macAddresses == null ||
                 macAddresses.isEmpty ||
                 macAddresses.contains(json['macAddress'] as String)) &&
             (proximities.isEmpty || proximities.contains(thisProximity)))
-          return Beacon.fromJson(json);
+          return Beacon.fromJson(json, thisProximity);
       }).toList();
     }
 
@@ -238,9 +234,6 @@ class Beacon {
   /// iOS will always set proximity by default, but Android is not
   /// so we manage it by filtering the accuracy like bellow :
   String get proximityValue {
-    if (_proximity != null) {
-      return _proximityToString(Proximity.unknown);
-    }
     return _proximityToString(_proximity);
   }
 
