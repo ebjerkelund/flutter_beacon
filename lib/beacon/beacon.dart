@@ -214,7 +214,7 @@ class Beacon {
       return Proximity.near;
     }
 
-    return Proximity.unknown;
+    return Proximity.far;
   }
 
   /// Return [Proximity] of beacon.
