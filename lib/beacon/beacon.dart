@@ -141,30 +141,6 @@ class Beacon {
     return 'unknown';
   }
 
-  /// Parsing Proximity into string value.
-  String proximityToString() {
-    if (_proximity == null) {
-      return "unknown";
-    }
-    if (_proximity == Proximity.unknown) {
-      return "unknown";
-    }
-
-    if (_proximity == Proximity.immediate) {
-      return "immediate";
-    }
-
-    if (_proximity == Proximity.near) {
-      return "near";
-    }
-
-    if (_proximity == Proximity.far) {
-      return "far";
-    }
-
-    return null;
-  }
-
   /// Parsing array of [Map] into [List] of [Beacon].
   static List<Beacon> beaconFromArray(dynamic beacons, List<String> macAddresses, List<Proximity> proximities) {
     if (beacons is List) {
