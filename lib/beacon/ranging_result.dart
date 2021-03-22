@@ -13,7 +13,7 @@ class RangingResult {
   final List<Beacon> beacons;
 
   /// Constructor for deserialize dynamic json into [RangingResult].
-  RangingResult.from(dynamic json, List<String> macAddresses, List<String> proximities)
+  RangingResult.from(dynamic json, List<String> macAddresses, List<Proximity> proximities)
       : region = Region.fromJson(json['region']),
         beacons = Beacon.beaconFromArray(json['beacons'], macAddresses, proximities);
 

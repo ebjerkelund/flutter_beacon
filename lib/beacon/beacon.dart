@@ -74,7 +74,7 @@ class Beacon {
           rssi: _parseInt(json['rssi']),
           txPower: _parseInt(json['txPower']),
           accuracy: _parseDouble(json['accuracy']),
-          proximity: _parseProximity(json['proximity']),
+          proximity: _stringToProximity(json['proximity']),
         );
 
   /// Parsing dynamic data into double.
@@ -99,8 +99,8 @@ class Beacon {
     return 0;
   }
 
-  /// Parsing dynamic proximity into enum [Proximity].
-  static dynamic _parseProximity(dynamic proximity) {
+  /// Parsing proximity string value into enum [Proximity].
+  static Proximity _stringToProximity(String proximity) {
     if (proximity == 'unknown') {
       return Proximity.unknown;
     }
@@ -120,11 +120,36 @@ class Beacon {
     return null;
   }
 
+  /// Parsing Proximity into string value.
+  String proximityToString() {
+    if (_proximity == null) {
+      return "unknown";
+    }
+    if (_proximity == Proximity.unknown) {
+      return "unknown";
+    }
+
+    if (_proximity == Proximity.immediate) {
+      return "immediate";
+    }
+
+    if (_proximity == Proximity.near) {
+      return "near";
+    }
+
+    if (_proximity == Proximity.far) {
+      return "far";
+    }
+
+    return null;
+  }
+
   /// Parsing array of [Map] into [List] of [Beacon].
-  static List<Beacon> beaconFromArray(dynamic beacons, List<String> macAddresses, List<String> proximities) {
+  static List<Beacon> beaconFromArray(dynamic beacons, List<String> macAddresses, List<Proximity> proximities) {
     if (beacons is List) {
       return beacons.map((json) {
-        if ((macAddresses == null || macAddresses.isEmpty || macAddresses.contains(json['macAddress'])) && (proximities == null || proximities.isEmpty || proximities.contains(json['proximity']))) return Beacon.fromJson(json);
+        Proximity thisProximity = _stringToProximity(json['proximity'] as String);
+        if ((macAddresses == null || macAddresses.isEmpty || macAddresses.contains(json['macAddress'])) && (proximities == null || proximities.isEmpty || proximities.contains(thisProximity))) return Beacon.fromJson(json);
       }).toList();
     }
 

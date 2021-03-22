@@ -130,10 +130,7 @@ main() {
       }),
     ];
     expect(Beacon.beaconArrayToJson(beacons) is List<dynamic>, isTrue);
-    expect(
-        Beacon.beaconFromArray(Beacon.beaconArrayToJson(beacons), <String>[])
-            is List<Beacon>,
-        isTrue);
+    expect(Beacon.beaconFromArray(Beacon.beaconArrayToJson(beacons), <String>[], <Proximity>[]) is List<Beacon>, isTrue);
   });
 
   test('beacon json must be equal', () {

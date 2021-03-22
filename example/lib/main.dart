@@ -36,9 +36,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   listeningState() async {
     print('Listening to bluetooth state');
-    _streamBluetooth = flutterBeacon
-        .bluetoothStateChanged()
-        .listen((BluetoothState state) async {
+    _streamBluetooth = flutterBeacon.bluetoothStateChanged().listen((BluetoothState state) async {
       print('BluetoothState = $state');
       streamController.add(state);
 
@@ -58,11 +56,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     final bluetoothState = await flutterBeacon.bluetoothState;
     final bluetoothEnabled = bluetoothState == BluetoothState.stateOn;
     final authorizationStatus = await flutterBeacon.authorizationStatus;
-    final authorizationStatusOk =
-        authorizationStatus == AuthorizationStatus.allowed ||
-            authorizationStatus == AuthorizationStatus.always;
-    final locationServiceEnabled =
-        await flutterBeacon.checkLocationServicesIfEnabled;
+    final authorizationStatusOk = authorizationStatus == AuthorizationStatus.allowed || authorizationStatus == AuthorizationStatus.always;
+    final locationServiceEnabled = await flutterBeacon.checkLocationServicesIfEnabled;
 
     setState(() {
       this.authorizationStatusOk = authorizationStatusOk;
@@ -74,9 +69,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   initScanBeacon() async {
     await flutterBeacon.initializeScanning(null);
     await checkAllRequirements();
-    if (!authorizationStatusOk ||
-        !locationServiceEnabled ||
-        !bluetoothEnabled) {
+    if (!authorizationStatusOk || !locationServiceEnabled || !bluetoothEnabled) {
       print('RETURNED, authorizationStatusOk=$authorizationStatusOk, '
           'locationServiceEnabled=$locationServiceEnabled, '
           'bluetoothEnabled=$bluetoothEnabled');
@@ -96,8 +89,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       }
     }
 
-    _streamRanging =
-        flutterBeacon.ranging(regions, <String>[]).listen((RangingResult result) {
+    _streamRanging = flutterBeacon.ranging(regions, <String>[], <Proximity>[]).listen((RangingResult result) {
       print(result);
       if (result != null && mounted) {
         setState(() {
@@ -194,9 +186,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   onPressed: () async {
                     if (Platform.isAndroid) {
                       await flutterBeacon.openLocationSettings;
-                    } else if (Platform.isIOS) {
-
-                    }
+                    } else if (Platform.isIOS) {}
                   }),
             StreamBuilder<BluetoothState>(
               builder: (context, snapshot) {
@@ -221,9 +211,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                           } on PlatformException catch (e) {
                             print(e);
                           }
-                        } else if (Platform.isIOS) {
-
-                        }
+                        } else if (Platform.isIOS) {}
                       },
                       color: Colors.red,
                     );
@@ -254,12 +242,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         subtitle: new Row(
                           mainAxisSize: MainAxisSize.max,
                           children: <Widget>[
-                            Text(
-                                    'Major: ${beacon.major}\nMinor: ${beacon.minor}',
-                                    style: TextStyle(fontSize: 13.0)),
-                            Text(
-                                    'Accuracy: ${beacon.accuracy}m\nRSSI: ${beacon.rssi}',
-                                    style: TextStyle(fontSize: 13.0)),
+                            Text('Major: ${beacon.major}\nMinor: ${beacon.minor}', style: TextStyle(fontSize: 13.0)),
+                            Text('Accuracy: ${beacon.accuracy}m\nRSSI: ${beacon.rssi}', style: TextStyle(fontSize: 13.0)),
                           ],
                         ),
                       );

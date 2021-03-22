@@ -6,10 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 main() {
   test('MonitoringEventType must equalTo "didEnterRegion', () {
     final map = {
-      'region': {
-        'identifier': 'Cubeacon',
-        'proximityUUID': 'CB10023F-A318-3394-4199-A8730C7C1AEC'
-      },
+      'region': {'identifier': 'Cubeacon', 'proximityUUID': 'CB10023F-A318-3394-4199-A8730C7C1AEC'},
       'beacons': [
         {
           'proximityUUID': 'CB10023F-A318-3394-4199-A8730C7C1AEC',
@@ -29,7 +26,7 @@ main() {
         }
       ]
     };
-    final enter = RangingResult.from(map, <String>[]);
+    final enter = RangingResult.from(map, <String>[], <Proximity>[]);
 
     expect(enter.region, isNotNull);
     expect(enter.region.identifier, 'Cubeacon');
