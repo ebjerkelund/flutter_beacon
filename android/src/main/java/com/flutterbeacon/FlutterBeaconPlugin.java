@@ -3,6 +3,7 @@ package com.flutterbeacon;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -105,10 +106,6 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     }
 
     beaconManager = BeaconManager.getInstanceForApplication(activity.getApplicationContext());
-    if (!beaconManager.getBeaconParsers().contains(iBeaconLayout)) {
-      beaconManager.getBeaconParsers().clear();
-      beaconManager.getBeaconParsers().add(iBeaconLayout);
-    }
 
     platform = new FlutterPlatform(activity);
     beaconScanner = new FlutterBeaconScanner(this, activity);
@@ -283,18 +280,9 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
       return;
     }
 
-  private void initialize(boolean eddystoneRequired, boolean altBeaconRequired) {
     if (call.method.equals("stopBroadcast")) {
       beaconBroadcast.stopBroadcast(result);
       return;
-    }
-    beaconManager = BeaconManager.getInstanceForApplication(registrar.context());
-    beaconManager.getBeaconParsers().clear();
-    if (eddystoneRequired) {
-      beaconManager.getBeaconParsers().add(eddystoneUIDLayout);
-    }
-    if (altBeaconRequired) {
-      beaconManager.getBeaconParsers().add(iBeaconLayout);
     }
 
     if (call.method.equals("isBroadcasting")) {
@@ -310,7 +298,17 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     result.notImplemented();
   }
 
-  private void initializeAndCheck(Result result, boolean eddystoneRequired, boolean altBeaconRequired) {
+  private void initialize (boolean eddystoneRequired, boolean altBeaconRequired) {
+    beaconManager.getBeaconParsers().clear();
+    if (eddystoneRequired) {
+      beaconManager.getBeaconParsers().add(eddystoneUIDLayout);
+    }
+    if (altBeaconRequired) {
+      beaconManager.getBeaconParsers().add(iBeaconLayout);
+    }
+  }
+
+  private void initializeAndCheck(Result result, boolean eddystoneRequired, boolean altBeaconRequired){
 
     if (platform.checkLocationServicesPermission()
         && platform.checkBluetoothIfEnabled()
