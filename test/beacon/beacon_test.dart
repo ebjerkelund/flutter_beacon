@@ -32,13 +32,33 @@ main() {
 
     const beacon2 = const Beacon(
       accuracy: 0.4,
+      proximityUUID: 'UUID',
+      major: 1,
+      minor: 2,
+      txPower: -59,
+      macAddress: '',
+      namespaceId: '',
+      instanceId: '',
+      type: '',
+      proximity: null
     );
     expect(beacon2.proximity, Proximity.immediate);
 
     const beacon3 = const Beacon(
       accuracy: 2.9,
+      proximityUUID: 'UUID',
+      major: 1,
+      minor: 2,
+      txPower: -59,
+      rssi: null,
+      macAddress: '',
+      namespaceId: '',
+      instanceId: '',
+      type: '',
+      proximity: null
     );
     expect(beacon3.proximity, Proximity.near);
+    expect(beacon3.rssi, -1);
   });
 
   test('constructor from json must be equal', () {
@@ -98,6 +118,10 @@ main() {
 
     expect(beacon1 == beacon2, isTrue);
     expect(beacon1.hashCode == beacon2.hashCode, isTrue);
+  });
+
+  test('parsing beacon array must be empty', () {
+    expect(Beacon.beaconFromArray(Object(), null, null).isEmpty, isTrue);
   });
 
   test('parsing beacon array length must be equal to "2"', () {
@@ -169,6 +193,7 @@ main() {
           'rssi': -60,
           'accuracy': 1.23,
           'proximity': 'far',
+          'macAddress': 'MAC',
         }));
   });
 }

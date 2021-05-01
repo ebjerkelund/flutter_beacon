@@ -10,7 +10,7 @@ class RangingResult {
   final Region region;
 
   /// The [List] of [Beacon] detected of ranging result by [Region].
-  final List<Beacon> beacons;
+  final List<Beacon?> beacons;
 
   /// Constructor for deserialize dynamic json into [RangingResult].
   RangingResult.from(dynamic json, List<String> macAddresses, List<Proximity> proximities)

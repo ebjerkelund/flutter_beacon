@@ -2,19 +2,20 @@
 //  Licensed under Apache License v2.0 that can be
 //  found in the LICENSE file.
 
+/// Flutter beacon library.
 library flutter_beacon;
 
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-part 'beacon/beacon.dart';
-part 'beacon/bluetooth_state.dart';
 part 'beacon/authorization_status.dart';
+part 'beacon/beacon.dart';
+part 'beacon/beacon_broadcast.dart';
+part 'beacon/bluetooth_state.dart';
 part 'beacon/monitoring_result.dart';
 part 'beacon/ranging_result.dart';
 part 'beacon/region.dart';
@@ -44,13 +45,13 @@ class FlutterBeacon {
   static const EventChannel _authorizationStatusChangedChannel = EventChannel('flutter_authorization_status_changed');
 
   /// This information does not change from call to call. Cache it.
-  Stream<BluetoothState> _onBluetoothState;
+  Stream<BluetoothState>? _onBluetoothState;
 
   /// This information does not change from call to call. Cache it.
-  Stream<AuthorizationStatus> _onAuthorizationStatus;
+  Stream<AuthorizationStatus>? _onAuthorizationStatus;
 
   /// Initialize scanning API.
-  Future<bool> initializeScanning(Map<String, bool> types) async {
+  Future<bool> initializeScanning(Map<String, bool>? types) async {
     final result = await _methodChannel.invokeMethod('initialize', types);
 
     if (result is bool) {
@@ -75,11 +76,9 @@ class FlutterBeacon {
 
     if (result is bool) {
       return result;
-    } else if (result is int) {
-      return result == 1;
     }
 
-    return result;
+    return result == 1;
   }
 
   /// Set the default AuthorizationStatus to use in requesting location authorization.
@@ -89,8 +88,10 @@ class FlutterBeacon {
   /// This method should be called very early to have an effect,
   /// before any of the other initializeScanning or authorizationStatus getters.
   ///
-  Future<bool> setLocationAuthorizationTypeDefault(AuthorizationStatus authorizationStatus) async {
-    return await _methodChannel.invokeMethod('setLocationAuthorizationTypeDefault', authorizationStatus.value);
+  Future<bool> setLocationAuthorizationTypeDefault(
+      AuthorizationStatus authorizationStatus) async {
+    return await _methodChannel.invokeMethod(
+        'setLocationAuthorizationTypeDefault', authorizationStatus.value);
   }
 
   /// Check for the latest [AuthorizationStatus] from device.
@@ -103,15 +104,14 @@ class FlutterBeacon {
 
   /// Return `true` when location service is enabled, otherwise `false`.
   Future<bool> get checkLocationServicesIfEnabled async {
-    final result = await _methodChannel.invokeMethod('checkLocationServicesIfEnabled');
+    final result =
+        await _methodChannel.invokeMethod('checkLocationServicesIfEnabled');
 
     if (result is bool) {
       return result;
-    } else if (result is int) {
-      return result == 1;
     }
 
-    return result;
+    return result == 1;
   }
 
   /// Check for the latest [BluetoothState] from device.
@@ -129,11 +129,9 @@ class FlutterBeacon {
 
     if (result is bool) {
       return result;
-    } else if (result is int) {
-      return result == 1;
     }
 
-    return result;
+    return result == 1;
   }
 
   /// Request to open Bluetooth Settings from device.
@@ -144,11 +142,9 @@ class FlutterBeacon {
 
     if (result is bool) {
       return result;
-    } else if (result is int) {
-      return result == 1;
     }
 
-    return result;
+    return result == 1;
   }
 
   /// Request to open Locations Settings from device.
@@ -159,11 +155,9 @@ class FlutterBeacon {
 
     if (result is bool) {
       return result;
-    } else if (result is int) {
-      return result == 1;
     }
 
-    return result;
+    return result == 1;
   }
 
   /// Request to open Application Settings from device.
@@ -174,11 +168,9 @@ class FlutterBeacon {
 
     if (result is bool) {
       return result;
-    } else if (result is int) {
-      return result == 1;
     }
 
-    return result;
+    return result == 1;
   }
 
   /// Close scanning API.
@@ -187,11 +179,9 @@ class FlutterBeacon {
 
     if (result is bool) {
       return result;
-    } else if (result is int) {
-      return result == 1;
     }
 
-    return result;
+    return result == 1;
   }
 
   /// Start ranging iBeacons with defined [List] of [Region]s.
@@ -219,7 +209,7 @@ class FlutterBeacon {
     if (_onBluetoothState == null) {
       _onBluetoothState = _bluetoothStateChangedChannel.receiveBroadcastStream().map((dynamic event) => BluetoothState.parse(event));
     }
-    return _onBluetoothState;
+    return _onBluetoothState!;
   }
 
   /// Start checking for location service authorization status changed.
@@ -229,6 +219,24 @@ class FlutterBeacon {
     if (_onAuthorizationStatus == null) {
       _onAuthorizationStatus = _authorizationStatusChangedChannel.receiveBroadcastStream().map((dynamic event) => AuthorizationStatus.parse(event));
     }
-    return _onAuthorizationStatus;
+    return _onAuthorizationStatus!;
+  }
+
+  Future<void> startBroadcast(BeaconBroadcast params) async {
+    await _methodChannel.invokeMethod('startBroadcast', params.toJson);
+  }
+
+  Future<void> stopBroadcast() async {
+    await _methodChannel.invokeMethod('stopBroadcast');
+  }
+
+  Future<bool> isBroadcasting() async {
+    final flag = await _methodChannel.invokeMethod('isBroadcasting');
+    return flag == true || flag == 1;
+  }
+
+  Future<bool> isBroadcastSupported() async {
+    final flag = await _methodChannel.invokeMethod('isBroadcastSupported');
+    return flag == true || flag == 1;
   }
 }

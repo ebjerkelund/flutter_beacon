@@ -55,7 +55,16 @@ void main() {
         return true;
       }
 
-      throw MissingPluginException('No implementation found for method $method on channel ${channel.name}');
+      if (method == 'isBroadcasting') {
+        return false;
+      }
+
+      if (method == 'isBroadcastSupported') {
+        return true;
+      }
+
+      throw MissingPluginException(
+          'No implementation found for method $method on channel ${channel.name}');
     });
 
     rangingChannel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -68,7 +77,7 @@ void main() {
           return Region.fromJson(arg);
         }).toList();
 
-        ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+        ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
           rangingChannel.name,
           const StandardMethodCodec().encodeSuccessEnvelope({
             'region': regions.first.toJson,
@@ -91,7 +100,7 @@ void main() {
               }
             ]
           }),
-          (ByteData data) {},
+          (ByteData? data) {},
         );
         return;
       }
@@ -131,10 +140,11 @@ void main() {
           }
 
           if (result != null) {
-            ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+            ServicesBinding.instance!.defaultBinaryMessenger
+                .handlePlatformMessage(
               monitoringChannel.name,
               const StandardMethodCodec().encodeSuccessEnvelope(result),
-              (ByteData data) {},
+              (ByteData? data) {},
             );
           }
         });
@@ -145,18 +155,19 @@ void main() {
     });
 
     bluetoothChannel.setMockMethodCallHandler((MethodCall methodCall) async {
-      ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+      ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
         bluetoothChannel.name,
         const StandardMethodCodec().encodeSuccessEnvelope('STATE_ON'),
-        (ByteData data) {},
+        (ByteData? data) {},
       );
     });
 
-    authorizationChannel.setMockMethodCallHandler((MethodCall methodCall) async {
-      ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+    authorizationChannel
+        .setMockMethodCallHandler((MethodCall methodCall) async {
+      ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
         authorizationChannel.name,
         const StandardMethodCodec().encodeSuccessEnvelope('ALLOWED'),
-        (ByteData data) {},
+        (ByteData? data) {},
       );
     });
   });
@@ -263,7 +274,7 @@ void main() {
   });
 
   group('Event channel - monitoring', () {
-    Stream<MonitoringResult> stream;
+    late Stream<MonitoringResult> stream;
 
     setUpAll(() {
       final regions = <Region>[
@@ -338,6 +349,18 @@ void main() {
     test('authorizationStatusChanged', () async {
       final result = await flutterBeacon.authorizationStatusChanged().first;
       expect(result.value, 'ALLOWED');
+    });
+  });
+
+  group('Event channel - broadcast', () {
+    test('isBroadcastSupported', () async {
+      final result = await flutterBeacon.isBroadcastSupported();
+      expect(result, true);
+    });
+
+    test('isBroadcasting', () async {
+      final result = await flutterBeacon.isBroadcasting();
+      expect(result, false);
     });
   });
 }
