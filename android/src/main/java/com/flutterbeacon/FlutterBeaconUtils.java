@@ -71,12 +71,13 @@ class FlutterBeaconUtils {
     // Log.d("BEACON", "rssi: " + beacon.getRssi());
     // Log.d("BEACON", "txPower: " + beacon.getTxPower());
     // Log.d("BEACON", "accuracy: " + beacon.getDistance());
-    Log.d("BEACON", "macAddress: " + beacon.getBluetoothAddress());
 
     map.put("rssi", beacon.getRssi());
     map.put("txPower", beacon.getTxPower());
     map.put("accuracy", String.format(Locale.US, "%.2f", beacon.getDistance()));
     map.put("macAddress", beacon.getBluetoothAddress());
+
+    Log.d("BEACON", "macAddress: " + beacon.getBluetoothAddress() + ": " + map.get("accuracy"));
 
     return map;
   }

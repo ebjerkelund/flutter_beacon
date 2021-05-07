@@ -204,7 +204,7 @@ class Beacon {
       return Proximity.unknown;
     }
 
-    if (accuracy <= 1.0) {
+    if (accuracy <= 2.0) {
       return Proximity.immediate;
     }
 
